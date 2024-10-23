@@ -1,6 +1,7 @@
 import scrapy
 from datetime import datetime
 
+
 class NetshoesSpider(scrapy.Spider):
     name = "netshoes"
     allowed_domains = ["www.netshoes.com.br"]
@@ -48,3 +49,4 @@ class NetshoesSpider(scrapy.Spider):
             '_source_link': self.start_urls[0],
             '_data_coleta': datetime.now()
         }
+    
