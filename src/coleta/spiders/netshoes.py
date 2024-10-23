@@ -1,5 +1,7 @@
 import scrapy
 from datetime import datetime
+import re
+
 
 
 class NetshoesSpider(scrapy.Spider):
@@ -11,18 +13,18 @@ class NetshoesSpider(scrapy.Spider):
 
     def parse(self, response):
         # Pegue os links para as páginas dos produtos
-        product_links = response.css('a.smarthint-tracking-card::attr(href)').getall()
+        product_links = response.css('div.card a::attr(href)').getall()
+
         for link in product_links:
             yield response.follow(link, callback=self.parse_product)
 
         # Verifica se deve continuar para a próxima página
-        '''
-        if self.page_count < self.max_page:
+        if self.page_count < self.max_pages:
             self.page_count += 1
-            next_page = f"{self.start_urls[0]}&departamento=running&tipo-de-produto=tenis-performance&nsCat=Artificial?page={self.page_count}"
-            if next_page:
-                yield scrapy.Request(url=next_page, callback=self.parse)
-        '''
+            # C URL da próxima página
+            next_page = f"https://www.netshoes.com.br/running/tenis-performance?genero=masculino&page={self.page_count}"
+            # Faz a requisição da próxima página
+            yield scrapy.Request(url=next_page, callback=self.parse)
 
     def parse_product(self, response):
         
