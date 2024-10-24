@@ -1,21 +1,21 @@
 import scrapy
 from datetime import datetime
 import re
+from typing import List, Dict, Any
 
 class MercadolivreSpider(scrapy.Spider):
-    name = "mercadolivre"
-    allowed_domains = ["lista.mercadolivre.com.br"]
-    start_urls = ["https://lista.mercadolivre.com.br/tenis-corrida-masculino"]
-
-    page_count = 1
-    max_pages = 10
+    name: str = "mercadolivre"
+    allowed_domains: List[str] = ["lista.mercadolivre.com.br"]
+    start_urls:List[str] = ["https://lista.mercadolivre.com.br/tenis-corrida-masculino"]
+    page_count:int = 1
+    max_pages:int = 10
 
     def parse(self, response):
-        products = response.css('div.ui-search-result__content')
+        products: List[scrapy.Selector] = response.css('div.ui-search-result__content')
 
         for product in products:
-            prices = product.css('span.andes-money-amount__fraction::text').getall()
-            cents = product.css('span.andes-money-amount__cents::text').getall()
+            prices: List[str] = product.css('span.andes-money-amount__fraction::text').getall()
+            cents: List[str] = product.css('span.andes-money-amount__cents::text').getall()
             
             yield {
                 'brand': product.css('span.ui-search-item__brand-discoverability.ui-search-item__group__element::text').get(),
@@ -33,7 +33,7 @@ class MercadolivreSpider(scrapy.Spider):
             }
 
         if self.page_count < self.max_pages:
-            next_page = response.css('li.andes-pagination__button.andes-pagination__button--next a::attr(href)').get()
+            next_page: str = response.css('li.andes-pagination__button.andes-pagination__button--next a::attr(href)').get()
             if next_page:
                 self.page_count += 1
                 yield scrapy.Request(url=next_page, callback=self.parse)
